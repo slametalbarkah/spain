@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matemáticas Interactivas | Calculadoras Profesionales</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            color: var(--dark-text);
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        @keyframes subtleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 20px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+            animation: underlineExpand 1.5s ease-out;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-weight: 300;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: var(--light-text);
+            font-weight: 300;
+            font-size: 1.1rem;
+            margin-top: 0;
+        }
+        
+        h2 {
+            color: var(--primary);
+            font-weight: 400;
+            margin-top: 50px;
+            position: relative;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--secondary);
+        }
+        
+        .math-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 40px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        
+        .math-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
+        }
+        
+        .formula-display {
+            font-family: 'Courier New', monospace;
+            background-color: var(--light-bg);
+            padding: 15px 20px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            margin: 25px 0;
+            border-left: 4px solid var(--secondary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .formula-display::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+            animation: formulaShine 3s infinite;
+        }
+        
+        @keyframes formulaShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .calculator-panel {
+            border-top: 1px solid #eee;
+            padding-top: 25px;
+            margin-top: 30px;
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .input-field {
+            flex: 1;
+            min-width: 120px;
+            margin: 8px 10px 8px 0;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .math-operator {
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin: 0 10px;
+            font-weight: 300;
+            animation: subtlePulse 2s infinite;
+        }
+        
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .calculate-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .calculate-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        
+        .calculate-btn::after {
+            content: "→";
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .calculate-btn:hover::after {
+            transform: translateX(3px);
+        }
+        
+        .progress-container {
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            margin: 25px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            transition: width 0.5s ease;
+        }
+        
+        .result-container {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+            border-left: 4px solid var(--accent);
+            position: relative;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-container::before {
+            content: "Resultado";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .result-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+        
+        .result-equation {
+            font-family: 'Courier New', monospace;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #eee, transparent);
+            margin: 60px 0;
+        }
+        
+        /* Advanced animations */
+        @keyframes underlineExpand {
+            from { width: 0; left: 50%; }
+            to { width: 50%; left: 25%; }
+        }
+        
+        .floating-math-symbol {
+            position: fixed;
+            opacity: 0.05;
+            font-size: 2rem;
+            z-index: -1;
+            animation: floatAround 20s infinite linear;
+        }
+        
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 50px) rotate(90deg); }
+            50% { transform: translate(0, 100px) rotate(180deg); }
+            75% { transform: translate(-100px, 50px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 30px 20px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .math-operator {
+                margin: 10px 0;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Matemáticas Interactivas</h1>
+        <p class="subtitle">Calculadoras profesionales con retroalimentación visual</p>
+    </header>
+    
+    <section>
+        <h2>Operaciones Fundamentales</h2>
+        <p>Explore operaciones matemáticas básicas con nuestras calculadoras interactivas. Cada cálculo proporciona retroalimentación visual detallada.</p>
+        
+        <div class="math-card">
+            <h3>Suma</h3>
+            <p>La suma combina dos números (sumandos) para formar su total. Representa la cantidad total de objetos.</p>
+            
+            <div class="formula-display">
+                a + b = suma
+            </div>
+            
+            <div class="calculator-panel">
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="number" id="sumando1" placeholder="Primer sumando">
+                    </div>
+                    <span class="math-operator">+</span>
+                    <div class="input-field">
+                        <input type="number" id="sumando2" placeholder="Segundo sumando">
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateSuma()">Calcular Suma</button>
+                
+                <div class="progress-container" id="suma-progress">
+                    <div class="progress-bar"></div>
+                </div>
+                
+                <div class="result-container" id="suma-result">
+                    <div class="result-value" id="suma-result-value"></div>
+                    <div class="result-equation" id="suma-equation"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <section>
+        <h2>Multiplicación</h2>
+        <p>La multiplicación representa una suma repetida. El producto de dos números corresponde al área de un rectángulo con esos lados.</p>
+        
+        <div class="math-card">
+            <h3>Calculadora de Multiplicación</h3>
+            
+            <div class="formula-display">
+                a × b = producto
+            </div>
+            
+            <div class="calculator-panel">
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="number" id="multiplicando" placeholder="Multiplicando">
+                    </div>
+                    <span class="math-operator">×</span>
+                    <div class="input-field">
+                        <input type="number" id="multiplicador" placeholder="Multiplicador">
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateMultiplicacion()">Calcular Producto</button>
+                
+                <div class="progress-container" id="multiplicacion-progress">
+                    <div class="progress-bar"></div>
+                </div>
+                
+                <div class="result-container" id="multiplicacion-result">
+                    <div class="result-value" id="multiplicacion-result-value"></div>
+                    <div class="result-equation" id="multiplicacion-equation"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <section>
+        <h2>Potenciación</h2>
+        <p>La potenciación implica elevar una base a un exponente. Esta operación hace crecer los valores exponencialmente.</p>
+        
+        <div class="math-card">
+            <h3>Calculadora de Potencias</h3>
+            
+            <div class="formula-display">
+                base<sup>exponente</sup> = potencia
+            </div>
+            
+            <div class="calculator-panel">
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="number" id="base" placeholder="Base">
+                    </div>
+                    <span class="math-operator">^</span>
+                    <div class="input-field">
+                        <input type="number" id="exponente" placeholder="Exponente">
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculatePotenciacion()">Calcular Potencia</button>
+                
+                <div class="progress-container" id="potenciacion-progress">
+                    <div class="progress-bar"></div>
+                </div>
+                
+                <div class="result-container" id="potenciacion-result">
+                    <div class="result-value" id="potenciacion-result-value"></div>
+                    <div class="result-equation" id="potenciacion-equation"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <section>
+        <h2>Cálculos Geométricos</h2>
+        <p>Calcule propiedades geométricas fundamentales con precisión. Nuestras herramientas proporcionan soluciones exactas y aproximadas.</p>
+        
+        <div class="math-card">
+            <h3>Área de Rectángulo</h3>
+            <p>El área de un rectángulo se calcula multiplicando su largo por su ancho.</p>
+            
+            <div class="formula-display">
+                área = largo × ancho
+            </div>
+            
+            <div class="calculator-panel">
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="number" id="largo" placeholder="Largo">
+                    </div>
+                    <span class="math-operator">×</span>
+                    <div class="input-field">
+                        <input type="number" id="ancho" placeholder="Ancho">
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateAreaRectangulo()">Calcular Área</button>
+                
+                <div class="progress-container" id="rectangulo-progress">
+                    <div class="progress-bar"></div>
+                </div>
+                
+                <div class="result-container" id="rectangulo-result">
+                    <div class="result-value" id="rectangulo-result-value"></div>
+                    <div class="result-equation" id="rectangulo-equation"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="math-card" style="margin-top: 30px;">
+            <h3>Circunferencia de Círculo</h3>
+            <p>La circunferencia de un círculo es proporcional a su diámetro, con π (pi) como constante de proporcionalidad.</p>
+            
+            <div class="formula-display">
+                circunferencia = 2πr
+            </div>
+            
+            <div class="calculator-panel">
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="number" id="radio" placeholder="Radio">
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateCircunferencia()">Calcular Circunferencia</button>
+                
+                <div class="progress-container" id="circunferencia-progress">
+                    <div class="progress-bar"></div>
+                </div>
+                
+                <div class="result-container" id="circunferencia-result">
+                    <div class="result-value" id="circunferencia-result-value"></div>
+                    <div class="result-equation" id="circunferencia-equation"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // Crear símbolos matemáticos flotantes
+        function createMathSymbols() {
+            const symbols = ['+', '−', '×', '÷', '=', '√', 'π', '∫', '∑', '∏', '∞'];
+            const container = document.body;
+            
+            for (let i = 0; i < 15; i++) {
+                const symbol = document.createElement('div');
+                symbol.className = 'floating-math-symbol';
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                symbol.style.left = Math.random() * 100 + 'vw';
+                symbol.style.top = Math.random() * 100 + 'vh';
+                symbol.style.animationDuration = (15 + Math.random() * 30) + 's';
+                symbol.style.animationDelay = Math.random() * 5 + 's';
+                symbol.style.fontSize = (1 + Math.random() * 3) + 'rem';
+                container.appendChild(symbol);
+            }
+        }
+        
+        // Mostrar progreso del cálculo
+        function showProgress(progressId, duration, callback) {
+            const progressContainer = document.getElementById(progressId);
+            const progressBar = progressContainer.querySelector('.progress-bar');
+            
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            
+            // Forzar reflow
+            void progressBar.offsetWidth;
+            
+            progressBar.style.width = '100%';
+            
+            setTimeout(() => {
+                if (callback) callback();
+            }, duration);
+        }
+        
+        // Mostrar resultado del cálculo
+        function showResult(resultId, valueId, equationId, value, equation) {
+            const resultContainer = document.getElementById(resultId);
+            const resultValue = document.getElementById(valueId);
+            const resultEquation = document.getElementById(equationId);
+            
+            resultValue.textContent = value;
+            resultEquation.textContent = equation;
+            
+            // Reiniciar animación
+            resultContainer.style.display = 'none';
+            void resultContainer.offsetWidth;
+            resultContainer.style.display = 'block';
+        }
+        
+        // Funciones de cálculo
+        function calculateSuma() {
+            const sumando1 = parseFloat(document.getElementById('sumando1').value);
+            const sumando2 = parseFloat(document.getElementById('sumando2').value);
+            
+            showProgress('suma-progress', 600, () => {
+                const suma = sumando1 + sumando2;
+                showResult(
+                    'suma-result',
+                    'suma-result-value',
+                    'suma-equation',
+                    suma.toLocaleString('es-ES'),
+                    `${sumando1} + ${sumando2} = ${suma}`
+                );
+            });
+        }
+        
+        function calculateMultiplicacion() {
+            const multiplicando = parseFloat(document.getElementById('multiplicando').value);
+            const multiplicador = parseFloat(document.getElementById('multiplicador').value);
+            
+            showProgress('multiplicacion-progress', 600, () => {
+                const producto = multiplicando * multiplicador;
+                showResult(
+                    'multiplicacion-result',
+                    'multiplicacion-result-value',
+                    'multiplicacion-equation',
+                    producto.toLocaleString('es-ES'),
+                    `${multiplicando} × ${multiplicador} = ${producto}`
+                );
+            });
+        }
+        
+        function calculatePotenciacion() {
+            const base = parseFloat(document.getElementById('base').value);
+            const exponente = parseFloat(document.getElementById('exponente').value);
+            
+            showProgress('potenciacion-progress', 600, () => {
+                const potencia = Math.pow(base, exponente);
+                showResult(
+                    'potenciacion-result',
+                    'potenciacion-result-value',
+                    'potenciacion-equation',
+                    potencia.toLocaleString('es-ES'),
+                    `${base}^${exponente} = ${potencia}`
+                );
+            });
+        }
+        
+        function calculateAreaRectangulo() {
+            const largo = parseFloat(document.getElementById('largo').value);
+            const ancho = parseFloat(document.getElementById('ancho').value);
+            
+            showProgress('rectangulo-progress', 600, () => {
+                const area = largo * ancho;
+                showResult(
+                    'rectangulo-result',
+                    'rectangulo-result-value',
+                    'rectangulo-equation',
+                    area.toLocaleString('es-ES'),
+                    `Área = ${largo} × ${ancho} = ${area}`
+                );
+            });
+        }
+        
+        function calculateCircunferencia() {
+            const radio = parseFloat(document.getElementById('radio').value);
+            
+            showProgress('circunferencia-progress', 600, () => {
+                const circunferencia = 2 * Math.PI * radio;
+                showResult(
+                    'circunferencia-result',
+                    'circunferencia-result-value',
+                    'circunferencia-equation',
+                    circunferencia.toFixed(4).replace('.', ','),
+                    `Circunferencia = 2 × π × ${radio} ≈ ${circunferencia.toFixed(4).replace('.', ',')}`
+                );
+            });
+        }
+        
+        // Inicialización al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            createMathSymbols();
+        });
+    </script>
+</body>
+</html>
